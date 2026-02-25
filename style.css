@@ -1,0 +1,138 @@
+/* Внос на заоблен шрифт от Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
+
+:root {
+    --bg-color: #F9F7F2;      /* Кремаво бяло */
+    --primary-color: #B2AC88; /* Грахово зелено (Sage) */
+    --accent-color: #DCAE96;  /* Розово-прасковено */
+    --text-color: #333333;    /* Въглен */
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: white;
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+/* Hero Секция */
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(180deg, #ffffff 0%, #F9F7F2 100%);
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+/* Продукти - Grid */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border-radius: 25px; /* Заоблени ъгли */
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 200px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.product-card h3 {
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+.price {
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #eee;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.status-retired {
+    background: #ffcccc;
+    color: #cc0000;
+}
+
+.btn {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border-radius: 50px;
+    margin-top: 15px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #9a946f;
+}
+
+footer {
+    text-align: center;
+    padding: 40px;
+    margin-top: 50px;
+    font-size: 0.9rem;
+    color: #888;
+}

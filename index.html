@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <title>Jellycat World | Firebase Store</title>
+    <link rel="stylesheet" href="style.css"> <!-- Ползваме същия CSS от преди -->
+</head>
+<body>
+
+<header>
+    <a href="#" class="logo">🧸 Jellycat Shop</a>
+    <nav>
+        <button id="showAll" class="btn-nav">Всички</button>
+        <button id="showRetired" class="btn-nav">Retired</button>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Твоите Firebase Приятели</h1>
+    <p>Данните идват директно от облака!</p>
+</section>
+
+<div class="container">
+    <div id="product-container" class="product-grid">
+        <!-- Тук JavaScript ще вмъкне продуктите -->
+        <p>Зареждане на пухкави играчки...</p>
+    </div>
+</div>
+
+<!-- FIREBASE SDK (Modular) -->
+<script type="module">
+  // 1. Внос на нужните функции от Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 2. Твоята конфигурация (КОПИРАЙ Я ОТ FIREBASE CONSOLE)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBkrjRjqo__uK4lOPR9n4MuzUogEgE7mTg",
+    authDomain: "jellygluposti-c87b2.firebaseapp.com",
+    projectId: "jellygluposti-c87b2",
+    storageBucket: "jellygluposti-c87b2.firebasestorage.app",
+    messagingSenderId: "214701739480",
+    appId: "1:214701739480:web:523484045b901669c236ad"
+  };
+
+  // Инициализация
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 3. Функция за извличане и показване на продуктите
+  async function loadProducts(filterStatus = null) {
+    const container = document.getElementById('product-container');
+    container.innerHTML = ''; // Изчистваме контейнера
+
+    let q;
+    if (filterStatus) {
+      // Заявка за филтриране (Заявка 2 от SQL примера ти)
+      q = query(collection(db, "products"), where("status", "==", filterStatus));
+    } else {
+      // Всички продукти
+      q = query(collection(db, "products"), orderBy("price", "asc"));
+    }
+
+    const querySnapshot = await getDocs(q);
+    
+    querySnapshot.forEach((doc) => {
+      const p = doc.data();
+      const productHTML = `
+        <div class="product-card">
+            <span class="status-badge ${p.status === 'Retired' ? 'status-retired' : ''}">${p.status}</span>
+            <img src="${p.imageurl}" alt="${p.name}" onerror="this.src='https://placehold.co/400x400?text=Jellycat'">
+            <h3>${p.name}</h3>
+            <p class="price">${p.price} €</p>
+            <button class="btn">Купи</button>
+        </div>
+      `;
+      container.innerHTML += productHTML;
+    });
+  }
+
+  // Скрипт за бутоните
+  document.getElementById('showAll').addEventListener('click', () => loadProducts());
+  document.getElementById('showRetired').addEventListener('click', () => loadProducts('Retired'));
+
+  // Първоначално зареждане
+  loadProducts();
+
+</script>
+
+<style>
+    /* Малко допълнителен стил за навигацията */
+    .btn-nav {
+        background: none;
+        border: 2px solid var(--primary-color);
+        padding: 5px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+    }
+    .btn-nav:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+</style>
+
+</body>
+</html>
