@@ -219,7 +219,7 @@
     const list = document.getElementById('cart-items-list');
     list.innerHTML = cart.map(i => `<div class="cart-item"><span>${i.name}</span><b>${i.price} €</b></div>`).join('');
     const total = cart.reduce((s, i) => s + i.price, 0);
-    document.getElementById('cart-total').innerText = `Общо: ${total.toFixed(2)} €`;
+    document.getElementById('cart-total').innerText = `Total: ${total.toFixed(2)} €`;
   }
 
   // 4. ИЗПРАЩАНЕ НА ПОРЪЧКА
