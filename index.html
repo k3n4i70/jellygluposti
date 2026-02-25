@@ -2,38 +2,156 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <title>Jellycat World | Firebase Store</title>
-    <link rel="stylesheet" href="style.css"> <!-- Ползваме същия CSS от преди -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jellycat World | Official Store</title>
+    
+    <!-- CSS СТИЛИЗАЦИЯ -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
+
+        :root {
+            --bg-color: #F9F7F2;
+            --primary-color: #B2AC88; /* Sage Green */
+            --accent-color: #DCAE96;  /* Dusty Rose */
+            --text-color: #333333;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0; padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background-color: white;
+            padding: 15px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo { font-size: 24px; font-weight: bold; color: var(--primary-color); text-decoration: none; cursor: pointer; }
+
+        .btn-nav {
+            background: none; border: 2px solid var(--primary-color);
+            padding: 8px 18px; border-radius: 20px;
+            cursor: pointer; font-family: inherit; font-weight: bold;
+            transition: 0.3s; margin-left: 5px;
+        }
+        .btn-nav:hover { background: var(--primary-color); color: white; }
+        .cart-btn { background: var(--accent-color); color: white; border: none; }
+
+        /* HERO SECTION */
+        .hero { text-align: center; padding: 60px 20px; background: white; margin-bottom: 20px; }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; color: var(--text-color); }
+
+        /* PRODUCT GRID */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; }
+
+        .product-card {
+            background: var(--card-bg); border-radius: 25px; padding: 20px;
+            text-align: center; transition: 0.3s; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .product-card img { width: 100%; height: 200px; object-fit: contain; border-radius: 15px; }
+        .product-card h3 { margin: 15px 0 5px; font-size: 1.2rem; }
+        .price { color: var(--primary-color); font-weight: bold; font-size: 1.1rem; }
+
+        .status-badge {
+            position: absolute; top: 15px; right: 15px; font-size: 0.7rem;
+            padding: 4px 10px; border-radius: 15px; background: #eee;
+        }
+        .status-retired { background: #ffcccc; color: #cc0000; }
+
+        .btn {
+            background-color: var(--primary-color); color: white; border: none;
+            padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            width: 100%; margin-top: 15px; font-family: inherit; font-weight: bold;
+        }
+
+        /* MODAL WINDOW */
+        .modal {
+            display: none; position: fixed; z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background-color: white; padding: 30px; border-radius: 30px;
+            max-width: 450px; width: 90%; text-align: center; position: relative;
+        }
+        .modal-content img { width: 100%; max-height: 250px; object-fit: contain; border-radius: 20px; margin-bottom: 15px; }
+        .close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: #888; }
+
+        /* CHECKOUT SECTION */
+        .checkout-section { display: none; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .checkout-section input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 15px; border: 1px solid #ddd; box-sizing: border-box; }
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+    </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo">🧸 Jellycat Shop</a>
+    <a class="logo" onclick="showSection('shop')">🧸 Jellycat Shop</a>
     <nav>
-        <button id="showAll" class="btn-nav">Всички</button>
-        <button id="showRetired" class="btn-nav">Retired</button>
+        <button class="btn-nav" onclick="filterProducts(null)">All</button>
+        <button class="btn-nav cart-btn" onclick="showSection('checkout')">
+            🛒 Cart (<span id="cart-count">0</span>)
+        </button>
     </nav>
 </header>
 
-<section class="hero">
-    <h1>Твоите Firebase Приятели</h1>
-    <p>Данните идват директно от облака!</p>
-</section>
+<div id="hero-area" class="hero">
+    <h1>Find your plushy friend</h1>
+    <p>Handpicked Jellycat plushies by SMS</p>
+</div>
 
-<div class="container">
+<!-- МАГАЗИН -->
+<div id="shop-page" class="container">
     <div id="product-container" class="product-grid">
-        <!-- Тук JavaScript ще вмъкне продуктите -->
-        <p>Зареждане на пухкави играчки...</p>
+        <p style="text-align: center;">Loading the amuseables...</p>
     </div>
 </div>
 
-<!-- FIREBASE SDK (Modular) -->
-<script type="module">
-  // 1. Внос на нужните функции от Firebase
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!-- КОЛИЧКА И ПОРЪЧКА -->
+<div id="checkout-page" class="container checkout-section">
+    <h2>Your Cart</h2>
+    <div id="cart-items-list"></div>
+    <h3 id="cart-total" style="text-align: right; margin: 20px 0;">Subtotal: 0 €</h3>
+    <hr>
+    <h3>Delivery Info</h3>
+    <input type="text" id="custName" placeholder="Your Names">
+    <input type="text" id="custAddress" placeholder="Addres">
+    <input type="email" id="custEmail" placeholder="e-mail">
+    <button class="btn" onclick="submitOrder()">Finish order</button>
+    <button class="btn" style="background: #ccc;" onclick="showSection('shop')">Back</button>
+</div>
 
-  // 2. Твоята конфигурация (КОПИРАЙ Я ОТ FIREBASE CONSOLE)
+<!-- МОДАЛЕН ПРОЗОРЕЦ -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImg" src="" alt="">
+        <h2 id="modalName"></h2>
+        <p id="modalDesc"></p>
+        <p class="price" id="modalPrice"></p>
+        <button class="btn" id="addToCartBtn">Add to cart</button>
+    </div>
+</div>
+
+<!-- FIREBASE ЛОГИКА -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, where, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyBkrjRjqo__uK4lOPR9n4MuzUogEgE7mTg",
     authDomain: "jellygluposti-c87b2.firebaseapp.com",
@@ -43,66 +161,97 @@
     appId: "1:214701739480:web:523484045b901669c236ad"
   };
 
-  // Инициализация
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  let cart = [];
 
-  // 3. Функция за извличане и показване на продуктите
+  // 1. ФУНКЦИЯ ЗАРЕЖДАНЕ НА ПРОДУКТИ
   async function loadProducts(filterStatus = null) {
     const container = document.getElementById('product-container');
-    container.innerHTML = ''; // Изчистваме контейнера
+    container.innerHTML = '<p>Loading...</p>';
 
-    let q;
+    let q = query(collection(db, "products"), orderBy("price", "asc"));
     if (filterStatus) {
-      // Заявка за филтриране (Заявка 2 от SQL примера ти)
       q = query(collection(db, "products"), where("status", "==", filterStatus));
-    } else {
-      // Всички продукти
-      q = query(collection(db, "products"), orderBy("price", "asc"));
     }
 
     const querySnapshot = await getDocs(q);
+    container.innerHTML = '';
     
     querySnapshot.forEach((doc) => {
       const p = doc.data();
+      // Проверка за линк на снимка (различни имена на полета в Firebase)
+      const img = p.imageurl || p.imageUrl || p.image || 'https://placehold.co/400x400?text=Jellycat';
+      
       const productHTML = `
         <div class="product-card">
             <span class="status-badge ${p.status === 'Retired' ? 'status-retired' : ''}">${p.status}</span>
-            <img src="${p.imageurl}" alt="${p.name}" onerror="this.src='https://placehold.co/400x400?text=Jellycat'">
+            <img src="${img}" alt="${p.name}">
             <h3>${p.name}</h3>
             <p class="price">${p.price} €</p>
-            <button class="btn">Buy</button>
+            <button class="btn" onclick="openProductModal('${p.name}', '${p.price}', '${img}', '${p.description || "Skibidi Gyat Rizz Lvl 999"}')">Buy</button>
         </div>
       `;
       container.innerHTML += productHTML;
     });
   }
 
-  // Скрипт за бутоните
-  document.getElementById('showAll').addEventListener('click', () => loadProducts());
-  document.getElementById('showRetired').addEventListener('click', () => loadProducts('Retired'));
+  // 2. ОТВАРЯНЕ НА МОДАЛ (СЪС СНИМКА)
+  window.openProductModal = (name, price, img, desc) => {
+    document.getElementById('modalImg').src = img;
+    document.getElementById('modalName').innerText = name;
+    document.getElementById('modalDesc').innerText = desc;
+    document.getElementById('modalPrice').innerText = price + " €";
+    document.getElementById('productModal').style.display = 'flex';
 
-  // Първоначално зареждане
+    document.getElementById('addToCartBtn').onclick = () => {
+        cart.push({ name, price: parseFloat(price) });
+        updateUI();
+        closeModal();
+    };
+  };
+
+  window.closeModal = () => { document.getElementById('productModal').style.display = 'none'; };
+
+  // 3. КОЛИЧКА
+  function updateUI() {
+    document.getElementById('cart-count').innerText = cart.length;
+    const list = document.getElementById('cart-items-list');
+    list.innerHTML = cart.map(i => `<div class="cart-item"><span>${i.name}</span><b>${i.price} €</b></div>`).join('');
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    document.getElementById('cart-total').innerText = `Общо: ${total.toFixed(2)} €`;
+  }
+
+  // 4. ИЗПРАЩАНЕ НА ПОРЪЧКА
+  window.submitOrder = async () => {
+    const name = document.getElementById('custName').value;
+    const addr = document.getElementById('custAddress').value;
+    const email = document.getElementById('custEmail').value;
+
+    if (!name || !addr || cart.length === 0) return alert("Enter details and/or add products!");
+
+    try {
+        await addDoc(collection(db, "orders"), {
+            customer: name, address: addr, email: email,
+            items: cart, date: new Date().toLocaleString()
+        });
+        alert("Order was sent!");
+        cart = []; updateUI(); showSection('shop');
+    } catch (e) { alert("Грешка: " + e.message); }
+  };
+
+  // НАВИГАЦИЯ
+  window.showSection = (s) => {
+    document.getElementById('shop-page').style.display = s === 'shop' ? 'block' : 'none';
+    document.getElementById('hero-area').style.display = s === 'shop' ? 'block' : 'none';
+    document.getElementById('checkout-page').style.display = s === 'checkout' ? 'block' : 'none';
+  };
+
+  window.filterProducts = (status) => { showSection('shop'); loadProducts(status); };
+
+  // Старт
   loadProducts();
-
 </script>
-
-<style>
-    /* Малко допълнителен стил за навигацията */
-    .btn-nav {
-        background: none;
-        border: 2px solid var(--primary-color);
-        padding: 5px 15px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-family: inherit;
-        font-weight: bold;
-    }
-    .btn-nav:hover {
-        background: var(--primary-color);
-        color: white;
-    }
-</style>
 
 </body>
 </html>
